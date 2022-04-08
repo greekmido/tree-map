@@ -1,6 +1,5 @@
 import './index.css';
 import * as d3 from 'd3';
-import {TextBox} from 'd3plus-text'
 let height = 700;
 let width =1200;
 let margin = {"top":20,"bottom":20,"left":50,"right":50};  
@@ -10,15 +9,21 @@ let colorScale = d3.scaleOrdinal().range(colorpallet)
 Promise.all([d3.json("https://cdn.freecodecamp.org/testable-projects-fcc/data/tree_map/video-game-sales-data.json"),
              d3.json("https://cdn.freecodecamp.org/testable-projects-fcc/data/tree_map/movie-data.json"),
             d3.json("https://cdn.freecodecamp.org/testable-projects-fcc/data/tree_map/kickstarter-funding-data.json")])
-            .then((data)=>{mapIt(data[0])}).catch((err)=>console.error(err));
-let myTextBox = new TextBox()
-function wrapIt(text){
-  myTextBox.data([{text:text}])
+            .then((data)=>{mapIt(data[1])}).catch((err)=>console.error(err));
+
+function wrapText(string,x,y,s){
+  let splitString = string.split(/(?=[A-Z][^A-Z])/g);
+  let spans = ""
+  splitString.forEach((e,i)=>{
+    spans += `<tspan x='${x}' y='${y+(s/1.3)+(i*s)}' font-size='${s}'>${e}</tspan >`
+  })
+  return spans
 }
 
 function ready(games,movies,kickstarter){
 
 }
+
 function mapIt(data){
     let root = d3.hierarchy(data);
     let layout = d3.treemap();
@@ -40,12 +45,9 @@ function mapIt(data){
     .attr("x",(d)=>d.x0).attr("y",(d)=>d.y0)
     .attr("width",(d)=>d.x1-d.x0).attr("height",(d)=>d.y1-d.y0)
     .attr("fill",(d)=>colorScale(d.data.category)).attr("id",(d)=>d.data.name)
-    myG.append("text").html((d)=>{
-      wrapIt(d.data.name)
-    })
-    .attr("x",(d)=>d.x0).attr("y",(d)=>d.y0).attr("width",(d)=>d.x1-d.x2).attr("height",(d)=>d.y1-d.y0);
-  }
+    myG.append("text").html((d)=>wrapText(d.data.name,d.x0,d.y0,d.value))
 
+  }
 
 
 
