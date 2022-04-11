@@ -9,19 +9,27 @@ let colorScale = d3.scaleOrdinal().range(colorpallet)
 Promise.all([d3.json("https://cdn.freecodecamp.org/testable-projects-fcc/data/tree_map/video-game-sales-data.json"),
              d3.json("https://cdn.freecodecamp.org/testable-projects-fcc/data/tree_map/movie-data.json"),
             d3.json("https://cdn.freecodecamp.org/testable-projects-fcc/data/tree_map/kickstarter-funding-data.json")])
-            .then((data)=>{mapIt(data[1])}).catch((err)=>console.error(err));
+            .then((data)=>{
+              let collection = document.getElementsByTagName('input');
+              for (let i =0; i<collection.length; i++){
+                collection[i].addEventListener("click",(event)=>{
+                  if (event.target.id === "games" ){
+                    mapIt(data[0]);
+                  } else if (event.target.id === "movies"){
+                    mapIt(data[1]);
+                  } else if (event.target.id === "kickstarters"){
+                    mapIt(data[2]);
+                  } else {console.error("something went wrong!! in the handler")}
+                })
+              }
+            }).catch((err)=>console.error(err));
 
-function wrapText(string,x,y,s){
+function wrapText(string,x,y,x1,y1){
   let splitString = string.split(/(?=[A-Z][^A-Z])/g);
   let spans = ""
   splitString.forEach((e,i)=>{
-    spans += `<tspan x='${x}' y='${y+(s/1.3)+(i*s)}' font-size='${s}'>${e}</tspan >`
-  })
+    spans += `<tspan x='${x+5}' y='${y+(y1-y)/7+(i*((y1-y)/7))}' font-size='${((x1-x)/17)+((y1-y)/17)}px'>${e}</tspan >`})
   return spans
-}
-
-function ready(games,movies,kickstarter){
-
 }
 
 function mapIt(data){
@@ -45,7 +53,7 @@ function mapIt(data){
     .attr("x",(d)=>d.x0).attr("y",(d)=>d.y0)
     .attr("width",(d)=>d.x1-d.x0).attr("height",(d)=>d.y1-d.y0)
     .attr("fill",(d)=>colorScale(d.data.category)).attr("id",(d)=>d.data.name)
-    myG.append("text").html((d)=>wrapText(d.data.name,d.x0,d.y0,d.value))
+    myG.append("text").html((d)=>wrapText(d.data.name,d.x0,d.y0,d.x1,d.y1))
 
   }
 
