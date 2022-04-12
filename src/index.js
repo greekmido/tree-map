@@ -1,6 +1,7 @@
 import './index.css';
 import * as d3 from 'd3';
 import { select } from 'd3';
+import { map } from 'd3';
 let height = 700;
 let width =1200;
 let margin = {"top":20,"bottom":20,"left":50,"right":50};  
@@ -12,29 +13,35 @@ Promise.all([d3.json("https://cdn.freecodecamp.org/testable-projects-fcc/data/tr
              d3.json("https://cdn.freecodecamp.org/testable-projects-fcc/data/tree_map/movie-data.json"),
             d3.json("https://cdn.freecodecamp.org/testable-projects-fcc/data/tree_map/kickstarter-funding-data.json")])
             .then((data)=>{
-              let collection = document.getElementsByTagName('input');
-              for (let i =0; i<collection.length; i++){
-                collection[i].addEventListener("click",(event)=>{
-                  if (event.target.id === "games" ){
-                    mapIt(data[0],"games");
-                  } else if (event.target.id === "movies"){
-                    mapIt(data[1],"movies");
-                  } else if (event.target.id === "kickstarters"){
-                    mapIt(data[2],"kickstarters");
-                  } else {console.error("something went wrong!! in the handler")}
-                })
+              if(document.getElementById("games").checked){
+                mapIt(data[0])
               }
+              document.getElementById('games').addEventListener("click",(event)=>{
+                if(event.target.checked){
+                  mapIt(data[0])
+                }
+              });
+              document.getElementById("movies").addEventListener("click",(event)=>{
+                if (event.target.checked){
+                  mapIt(data[1])
+                } 
+              });
+              document.getElementById("kickstarters").addEventListener("click",(event)=>{
+                if(event.target.checked){
+                  mapIt(data[2])
+                }
+              })              
             }).catch((err)=>console.error(err));
 
 function wrapText(string,x,y,x1,y1){
   let splitString = string.split(/(?=[A-Z][^A-Z])/g);
   let spans = ""
   splitString.forEach((e,i)=>{
-    spans += `<tspan x='${x+5}' y='${y+(y1-y)/7+(i*((y1-y)/7))}' font-size='${((x1-x)/17)+((y1-y)/17)}px'>${e}</tspan >`})
+    spans += `<tspan x='${x+5}' y='${y+(y1-y)/5+(i*((y1-y)/5))}' font-size='${((x1-x)/15)+((y1-y)/15)}px'>${e}</tspan >`})
   return spans
 }
 
-function mapIt(data,dataType){
+function mapIt(data){
    
     let root = d3.hierarchy(data);
     let layout = d3.treemap();
@@ -51,14 +58,14 @@ function mapIt(data,dataType){
           catList.push(leaf.parent.data.name);}}});
     colorScale.domain(catList);
     
-    // svg.selectAll("g").data(root.leaves(),(d)=>d).join("g").attr("name",(d)=>d.data.name)
-    // .join("rect")
-    // .attr("x",(d)=>d.x0).attr("y",(d)=>d.y0)
-    // .attr("width",(d)=>d.x1-d.x0).attr("height",(d)=>d.y1-d.y0)
-    // .attr("fill",(d)=>colorScale(d.data.category)).attr("id",(d)=>d.data.name);
-    console.log(svg.selectAll("g").data(root.leaves(),(d)=>d).join("g").append("text"))
-    //svg.selectAll("g").data(root.leaves(),(d)=>d).join("g").insert("text").html((d)=>wrapText(d.data.name,d.x0,d.y0,d.x1,d.y1))
-
+   let myG =  svg.selectAll("g").data(root.leaves(),(d)=>d.data.name)
+    .join("g")
+    myG.append("rect")
+    .attr("x",(d)=>d.x0).attr("y",(d)=>d.y0)
+    .attr("width",(d)=>d.x1-d.x0).attr("height",(d)=>d.y1-d.y0)
+    .attr("fill",(d)=>colorScale(d.data.category));
+    myG.insert("text")
+    .html((d)=>wrapText(d.data.name,d.x0,d.y0,d.x1,d.y1))
   }
 
 
