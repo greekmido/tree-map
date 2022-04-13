@@ -37,3 +37,15 @@ input[type="radio"]:checked + label span {
     padding: 2px;
     margin:0 5px;
   }
+  .tooltip {
+      position: absolute;
+      background-color: chartreuse;
+      color: black;
+      font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+      opacity: 0;
+      padding:5px
+  }
+  #title{
+      margin: 0;
+      padding:0;
+  }
