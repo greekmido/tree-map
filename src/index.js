@@ -73,9 +73,12 @@ function mapIt(data){
     .join("g").on("mousemove",(event,d)=>{
       d3.select(".tooltip").style("opacity","0.8").html(`${d.data.name}<br>value: ${d.value}`)
       .style("left",event.pageX+50+"px").style("top",event.pageY-20+"px")
+    }).on("mouseout",(event,d)=>{
+      d3.select(".tooltip").style("opacity","0");
+      console.log("mouseout")
     })
     myG.append("rect")
-    .attr("x",(d)=>d.x0).attr("y",(d)=>d.y0)
+    .attr("x",(d)=>d.x0).attr("y",(d)=>d.y0).transition()
     .attr("width",(d)=>d.x1-d.x0).attr("height",(d)=>d.y1-d.y0)
     .attr("fill",(d)=>colorScale(d.data.category));
     myG.insert("text")
